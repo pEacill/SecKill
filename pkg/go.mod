@@ -1,10 +1,12 @@
-module pkg
+module github.com/pEacill/SecKill/pkg
 
 go 1.23.1
 
 require (
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
+	gorm.io/driver/mysql v1.5.7
+	gorm.io/gorm v1.25.12
 )
 
 require (
@@ -32,6 +34,4 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/mysql v1.5.7 // indirect
-	gorm.io/gorm v1.25.7 // indirect
 )
