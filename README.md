@@ -2,7 +2,7 @@
 
 Using the Golang microservice framework to implement a product flash sale service
 
-### Technical framework
+## Technical framework
 
 **Microservices Framework:** go-kit
 
@@ -14,7 +14,7 @@ Using the Golang microservice framework to implement a product flash sale servic
 
 **Database Operations:** Gorm
 
-### Algorithm
+## Algorithm
 
 **Load balancing algorithm (optional):** Random LoadBalance Algorithm and Weight Round Robin LoadBalance Algorithm
 
