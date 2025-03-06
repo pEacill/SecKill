@@ -1,0 +1,19 @@
+http:
+  host: localhost
+  port: 9090
+
+rpc:
+  host: localhost
+  port: 9091
+
+discover:
+  host: localhost
+  port: 8500
+  instanceId: test_service
+  serviceName: test
+  weight: 10
+
+config:
+  id: test_service
+  profile: "dev"
+  label: "main"
