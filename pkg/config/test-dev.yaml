@@ -1,0 +1,4 @@
+trace:
+  host: localhost
+  port: 9411
+  url: /api/v2/spans
