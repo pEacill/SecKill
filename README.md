@@ -14,6 +14,8 @@ Using the Golang microservice framework to implement a product flash sale servic
 
 **Database Operations:** Gorm
 
+**Distributed Tracing:** Zipkin
+
 ## Algorithm
 
 **Load balancing algorithm (optional):** Random LoadBalance Algorithm and Weight Round Robin LoadBalance Algorithm
