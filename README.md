@@ -16,6 +16,8 @@ Using the Golang microservice framework to implement a product flash sale servic
 
 **Distributed Tracing:** Zipkin
 
+**System Monitoring and Alerting:** Prometheus
+
 ## Algorithm
 
 **Load balancing algorithm (optional):** Random LoadBalance Algorithm and Weight Round Robin LoadBalance Algorithm
