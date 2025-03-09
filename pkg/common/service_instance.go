@@ -2,7 +2,7 @@ package common
 
 type ServiceInstance struct {
 	Host          string
-	Port          string
+	Port          int
 	Weight        int
 	CurrentWeight int
 

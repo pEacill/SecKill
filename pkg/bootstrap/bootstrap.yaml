@@ -14,6 +14,6 @@ discover:
   weight: 10
 
 config:
-  id: test_service
+  id: config_service
   profile: "dev"
   label: "main"
