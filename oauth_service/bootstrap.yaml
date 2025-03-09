@@ -1,0 +1,19 @@
+http:
+  host: localhost
+  port: 9003
+
+rpc:
+  host: localhost
+  port: 9002
+
+discover:
+  Host: localhost
+  port: 8500
+  instanceId: oauth-service-localhost
+  serviceName: oauth
+  weight: 10
+
+config:
+  id: config-service
+  profile: "dev"
+  label: "main"
