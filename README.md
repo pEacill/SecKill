@@ -23,3 +23,5 @@ Using the Golang microservice framework to implement a product flash sale servic
 **Load balancing algorithm (optional):** Random LoadBalance Algorithm and Weight Round Robin LoadBalance Algorithm
 
 **Rate Limit Algorithm（optional）:** Token Bucket Algorithm and Leaky Bucket Algorithm
+
+**Authorisation and Authentication:** OAuth2(username and password mode) & JWT
