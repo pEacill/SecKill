@@ -6,7 +6,7 @@ Using the Golang microservice framework to implement a product flash sale servic
 
 **Microservices Framework:** go-kit
 
-**Service Discovery:** Consul
+**Service Discovery(optional):** Consul or Etcd
 
 **Distributed Configuration Center:** Sprint Cloud Config
 
