@@ -32,7 +32,7 @@ func NewUserClient(serviceName string, lb loadbalance.LoadBalance, tracer opentr
 		manager: &DefaultClientManager{
 			serviceName:     serviceName,
 			loadBalance:     lb,
-			discoveryClient: discovery.ConsulService,
+			discoveryClient: discovery.DiscoverService,
 			logger:          discovery.Logger,
 		},
 		serviceName: serviceName,

@@ -10,7 +10,7 @@ import (
 	"github.com/pEacill/SecKill/pkg/common"
 )
 
-func NewDiscoveryClient(consulHost, consulPort string) *DiscoveryClientInstance {
+func NewConsulDiscoveryClient(consulHost, consulPort string) *ConsulDiscoveryClientInstance {
 	port, _ := strconv.Atoi(consulPort)
 
 	consulConfig := api.DefaultConfig()
@@ -32,7 +32,7 @@ func NewDiscoveryClient(consulHost, consulPort string) *DiscoveryClientInstance 
 	}
 	log.Println("Consul client initialized successfully")
 
-	return &DiscoveryClientInstance{
+	return &ConsulDiscoveryClientInstance{
 		Host:   consulHost,
 		Port:   port,
 		config: consulConfig,
@@ -40,7 +40,7 @@ func NewDiscoveryClient(consulHost, consulPort string) *DiscoveryClientInstance 
 	}
 }
 
-func (d *DiscoveryClientInstance) Register(instanceId, svcHost, healthCheckURL, svcPort, svcName string, weight int, meta map[string]string, tags []string, logger *log.Logger) bool {
+func (d *ConsulDiscoveryClientInstance) Register(instanceId, svcHost, healthCheckURL, svcPort, svcName string, weight int, meta map[string]string, tags []string, logger *log.Logger) bool {
 	if d.client == nil {
 		if logger != nil {
 			logger.Println("Consul client is not initialized")
@@ -81,7 +81,7 @@ func (d *DiscoveryClientInstance) Register(instanceId, svcHost, healthCheckURL, 
 	return true
 }
 
-func (d *DiscoveryClientInstance) DeRegister(instanceId string, logger *log.Logger) bool {
+func (d *ConsulDiscoveryClientInstance) DeRegister(instanceId string, logger *log.Logger) bool {
 	serviceRegistion := &api.AgentServiceRegistration{
 		ID: instanceId,
 	}
@@ -118,7 +118,7 @@ func newServiceInstance(service *api.AgentService) *common.ServiceInstance {
 	}
 }
 
-func (d *DiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []*common.ServiceInstance {
+func (d *ConsulDiscoveryClientInstance) DiscoverServices(serviceName string, logger *log.Logger) []*common.ServiceInstance {
 	instanceList, ok := d.instancesMap.Load(serviceName)
 	if ok {
 		return instanceList.([]*common.ServiceInstance)

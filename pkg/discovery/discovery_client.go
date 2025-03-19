@@ -7,9 +7,10 @@ import (
 	"github.com/go-kit/kit/sd/consul"
 	"github.com/hashicorp/consul/api"
 	"github.com/pEacill/SecKill/pkg/common"
+	"go.etcd.io/etcd/clientv3"
 )
 
-type DiscoveryClientInstance struct {
+type ConsulDiscoveryClientInstance struct {
 	Host string
 	Port int
 
@@ -18,6 +19,18 @@ type DiscoveryClientInstance struct {
 	mutex  sync.Mutex
 
 	instancesMap sync.Map
+}
+
+type EtcdDistcoveryClientTnstance struct {
+	Host string
+	Port int
+
+	config clientv3.Config
+	client *clientv3.Client
+	mutex  sync.Mutex
+
+	instancesMap sync.Map
+	leases       map[string]clientv3.LeaseID
 }
 
 type DiscoveryClient interface {

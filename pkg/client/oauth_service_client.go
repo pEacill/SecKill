@@ -32,7 +32,7 @@ func NewOAuthClient(serviceName string, lb loadbalance.LoadBalance, tracer opent
 		manager: &DefaultClientManager{
 			serviceName:     serviceName,
 			loadBalance:     lb,
-			discoveryClient: discovery.ConsulService,
+			discoveryClient: discovery.DiscoverService,
 			logger:          discovery.Logger,
 		},
 		serviceName: serviceName,

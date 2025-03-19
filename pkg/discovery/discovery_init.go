@@ -13,7 +13,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-var ConsulService DiscoveryClient
+var DiscoverService DiscoveryClient
 var LoadBalance loadbalance.LoadBalance
 var Logger *log.Logger
 
@@ -22,13 +22,13 @@ func init() {
 }
 
 func InitComponent() {
-	ConsulService = NewDiscoveryClient(bootstrap.DiscoverConfig.Host, bootstrap.DiscoverConfig.Port)
+	DiscoverService = NewConsulDiscoveryClient(bootstrap.DiscoverConfig.Host, bootstrap.DiscoverConfig.Port)
 	LoadBalance = new(loadbalance.RandomeLoadBalance)
 	Logger = log.New(os.Stderr, "", log.LstdFlags)
 }
 
 func Register() {
-	if ConsulService == nil {
+	if DiscoverService == nil {
 		panic(0)
 	}
 
@@ -37,7 +37,7 @@ func Register() {
 		instanceId = bootstrap.DiscoverConfig.ServiceName + uuid.NewV4().String()
 	}
 
-	if !ConsulService.Register(
+	if !DiscoverService.Register(
 		instanceId,
 		bootstrap.HttpConfig.Host,
 		"/health",
@@ -57,7 +57,7 @@ func Register() {
 }
 
 func Deregister() {
-	if ConsulService == nil {
+	if DiscoverService == nil {
 		panic(0)
 	}
 
@@ -66,14 +66,14 @@ func Deregister() {
 		instanceId = bootstrap.DiscoverConfig.ServiceName + "-" + uuid.NewV4().String()
 	}
 
-	if !ConsulService.DeRegister(instanceId, Logger) {
+	if !DiscoverService.DeRegister(instanceId, Logger) {
 		Logger.Printf("deregister for service %s failed.", bootstrap.DiscoverConfig.ServiceName)
 		panic(0)
 	}
 }
 
 func DiscoveryService(serviceName string) (*common.ServiceInstance, error) {
-	instances := ConsulService.DiscoverServices(serviceName, Logger)
+	instances := DiscoverService.DiscoverServices(serviceName, Logger)
 	if len(instances) < 1 {
 		Logger.Printf("no available client for %s.", serviceName)
 		return nil, errors.ErrInstanceNotExisted

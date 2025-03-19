@@ -10,7 +10,7 @@ import (
 func TestDiscoveryInit(t *testing.T) {
 	discovery.InitComponent()
 
-	if discovery.ConsulService == nil {
+	if discovery.DiscoverService == nil {
 		t.Fatalf("Failed to initialize ConsulService")
 	}
 	t.Logf("ConsulService initialized successfully")
