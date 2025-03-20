@@ -7,6 +7,7 @@ rpc:
   port: 9000
 
 discover:
+  type: 
   Host: localhost
   port: 8500
   instanceId: user-service-localhost
