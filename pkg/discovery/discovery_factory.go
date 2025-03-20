@@ -5,11 +5,11 @@ import (
 	"log"
 )
 
-type DiscoveryType uint8
+type DiscoveryType string
 
 const (
-	ConsulDiscovery DiscoveryType = iota
-	EtcdDistcovery
+	ConsulDiscovery DiscoveryType = "Consul"
+	EtcdDistcovery  DiscoveryType = "Etcd"
 )
 
 func CreateDiscoveryClient(discoveryType DiscoveryType, host, port string) (DiscoveryClient, error) {

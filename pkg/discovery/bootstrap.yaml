@@ -7,6 +7,7 @@ rpc:
   port: 9091
 
 discover:
+  type: 
   host: localhost
   port: 8500
   instanceId: test_service

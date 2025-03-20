@@ -22,7 +22,15 @@ func init() {
 }
 
 func InitComponent() {
-	DiscoverService = NewConsulDiscoveryClient(bootstrap.DiscoverConfig.Host, bootstrap.DiscoverConfig.Port)
+	discoveryType := bootstrap.DiscoverConfig.Type
+	if discoveryType == "" {
+		discoveryType = string(ConsulDiscovery)
+	}
+	var err error
+	DiscoverService, err = CreateDiscoveryClient(DiscoveryType(discoveryType), bootstrap.DiscoverConfig.Host, bootstrap.DiscoverConfig.Port)
+	if err != nil {
+		panic(fmt.Sprintf("Create discovery client error: %v", err))
+	}
 	LoadBalance = new(loadbalance.RandomeLoadBalance)
 	Logger = log.New(os.Stderr, "", log.LstdFlags)
 }

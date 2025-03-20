@@ -10,6 +10,7 @@ type RpcConf struct {
 }
 
 type DiscoverConf struct {
+	Type        string
 	Host        string
 	Port        string
 	ServiceName string
