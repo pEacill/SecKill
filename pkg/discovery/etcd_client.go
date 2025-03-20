@@ -115,9 +115,146 @@ func (e *EtcdDistcoveryClientTnstance) Register(instanceId, svcHost, healthCheck
 }
 
 func (e *EtcdDistcoveryClientTnstance) DeRegister(instanceId string, logger *log.Logger) bool {
-	return false
+	if e.client == nil {
+		if logger != nil {
+			logger.Println("Etcd client not init.")
+		}
+		return false
+	}
+
+	ctx := context.Background()
+
+	if leaseId, exist := e.leases[instanceId]; exist {
+		_, err := e.client.Revoke(ctx, leaseId)
+		if err != nil {
+			if logger != nil {
+				logger.Println("Register fail (lease fail) %v.", err)
+			}
+			return false
+		}
+		delete(e.leases, instanceId)
+	} else {
+		resp, err := e.client.Get(ctx, "/services/", clientv3.WithPrefix())
+		if err != nil {
+			if logger != nil {
+				logger.Println("Register fail (search service fail) %v.", err)
+			}
+			return false
+		}
+
+		for _, kv := range resp.Kvs {
+			var serviceData map[string]interface{}
+
+			if err := json.Unmarshal(kv.Value, &serviceData); err != nil {
+				continue
+			}
+
+			if id, ok := serviceData["ID"].(string); ok && id == instanceId {
+				_, err = e.client.Delete(ctx, string(kv.Key))
+				if err != nil {
+					if logger != nil {
+						logger.Println("Register fail (delete service in Etcd fail) %v.", err)
+					}
+					return false
+				}
+				break
+			}
+		}
+	}
+
+	if logger != nil {
+		logger.Println("Register services success.")
+	}
+
+	return true
 }
 
 func (e *EtcdDistcoveryClientTnstance) DiscoverServices(serviceName string, logger *log.Logger) []*common.ServiceInstance {
-	return nil
+	instanceList, ok := e.instancesMap.Load(serviceName)
+	if ok {
+		return instanceList.([]*common.ServiceInstance)
+	}
+
+	e.mutex.Lock()
+	defer e.mutex.Unlock()
+
+	instanceList, ok = e.instancesMap.Load(serviceName)
+	if ok {
+		return instanceList.([]*common.ServiceInstance)
+	} else {
+		go e.watchService(serviceName, logger)
+
+		instances := e.getServiceInstances(serviceName, logger)
+		e.instancesMap.Store(serviceName, instances)
+		return instances
+	}
+}
+
+func (e *EtcdDistcoveryClientTnstance) getServiceInstances(serviceName string, logger *log.Logger) []*common.ServiceInstance {
+	ctx := context.Background()
+	resp, err := e.client.Get(ctx, "/services/"+serviceName+"/", clientv3.WithPrefix())
+	if err != nil {
+		if logger != nil {
+			logger.Println("discover services error: %v.", err)
+		}
+		return []*common.ServiceInstance{}
+	}
+
+	instances := make([]*common.ServiceInstance, len(resp.Kvs))
+	for _, kv := range resp.Kvs {
+		var serviceData map[string]interface{}
+		if err := json.Unmarshal(kv.Value, &serviceData); err != nil {
+			if logger != nil {
+				logger.Println("discover services error(json unmarshal error): %v.", err)
+			}
+			continue
+		}
+
+		portValue, _ := serviceData["Port"].(float64)
+		port := int(portValue)
+		rpcPort := port - 1
+
+		if meta, ok := serviceData["Meta"].(map[string]interface{}); ok {
+			if rpcPortStr, ok := meta["rpcPort"].(string); ok {
+				rpcPort, _ = strconv.Atoi(rpcPortStr)
+			}
+		}
+
+		weightValue, _ := serviceData["Weight"].(float64)
+		weight := int(weightValue)
+
+		instance := &common.ServiceInstance{
+			Host:     serviceData["Address"].(string),
+			Port:     port,
+			GrpcPort: rpcPort,
+			Weight:   weight,
+		}
+
+		instances = append(instances, instance)
+	}
+
+	return instances
+}
+
+func (e *EtcdDistcoveryClientTnstance) watchService(serviceName string, logger *log.Logger) {
+	prefix := "/services/" + serviceName + "/"
+	ctx := context.Background()
+
+	watchCh := e.client.Watch(ctx, prefix, clientv3.WithPrefix())
+
+	for watchResp := range watchCh {
+		if watchResp.Canceled {
+			if logger != nil {
+				logger.Println("Watch service over. service name: %v.", serviceName)
+			}
+			return
+		}
+
+		instances := e.getServiceInstances(serviceName, logger)
+		e.instancesMap.Store(serviceName, instances)
+
+		if logger != nil {
+			logger.Println("Update services: %v, instances num: %v", serviceName, len(instances))
+		}
+	}
 }
